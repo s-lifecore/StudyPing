@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import usePushNotification from "@/hooks/usePushNotification";
 import Header from "../components/Header";
 
 import {
@@ -18,6 +18,7 @@ export default function Home() {
 
   const [rooms, setRooms] = useState([]);
   const [roomInput, setRoomInput] = useState("");
+  const { sendPush } = usePushNotification();
 
   const fetchRooms = async () => {
     try {
