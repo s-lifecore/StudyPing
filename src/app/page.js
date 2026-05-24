@@ -18,17 +18,32 @@ export default function Home() {
 
   const [sessions, setSessions] = useState([]);
 
+  const [mySession, setMySession] =
+    useState(null);
+
   const fetchSessions = async () => {
     try {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        COLLECTION_ID,
-        [
-          Query.equal("status", "active"),
-        ]
-      );
+      const response =
+        await databases.listDocuments(
+          DATABASE_ID,
+          COLLECTION_ID,
+          [
+            Query.equal(
+              "status",
+              "active"
+            ),
+          ]
+        );
 
       setSessions(response.documents);
+
+      const mine = response.documents.find(
+        (session) =>
+          session.name === name
+      );
+
+      setMySession(mine || null);
+
     } catch (error) {
       console.error(error);
     }
@@ -58,6 +73,33 @@ export default function Home() {
       await fetchSessions();
 
       alert("開始した！");
+
+    } catch (error) {
+      console.error(error);
+
+      alert("エラー");
+    }
+  };
+
+  const handleEnd = async () => {
+    if (!mySession) {
+      return;
+    }
+
+    try {
+      await databases.updateDocument(
+        DATABASE_ID,
+        COLLECTION_ID,
+        mySession.$id,
+        {
+          status: "finished",
+        }
+      );
+
+      await fetchSessions();
+
+      alert("終了した！");
+
     } catch (error) {
       console.error(error);
 
@@ -66,15 +108,19 @@ export default function Home() {
   };
 
   useEffect(() => {
-    fetchSessions();
-
     const savedName =
-      localStorage.getItem("studyping-name");
+      localStorage.getItem(
+        "studyping-name"
+      );
 
     if (savedName) {
       setName(savedName);
     }
   }, []);
+
+  useEffect(() => {
+    fetchSessions();
+  }, [name]);
 
   return (
     <main className="min-h-screen p-8">
@@ -97,12 +143,21 @@ export default function Home() {
         className="mt-6 w-full rounded border p-2"
       />
 
-      <button
-        onClick={handleStart}
-        className="mt-4 rounded bg-black px-4 py-2 text-white"
-      >
-        作業開始
-      </button>
+      {mySession ? (
+        <button
+          onClick={handleEnd}
+          className="mt-4 rounded bg-red-500 px-4 py-2 text-white"
+        >
+          作業終了
+        </button>
+      ) : (
+        <button
+          onClick={handleStart}
+          className="mt-4 rounded bg-black px-4 py-2 text-white"
+        >
+          作業開始
+        </button>
+      )}
 
       <div className="mt-10">
         <h2 className="text-2xl font-bold">
