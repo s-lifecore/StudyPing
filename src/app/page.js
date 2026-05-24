@@ -21,6 +21,15 @@ export default function Home() {
   const [name, setName] =
     useState("");
 
+  const [place, setPlace] =
+    useState("");
+
+  const [mode, setMode] =
+    useState("なんにんでも");
+
+  const [startNote, setStartNote] =
+    useState("");
+
   const [sessions, setSessions] =
     useState([]);
 
@@ -73,9 +82,9 @@ export default function Home() {
         {
           name: name,
           status: "active",
-          place: "図書館",
-          mode: "なんにんでも",
-          startNote: "線形代数",
+          place: place,
+          mode: mode,
+          startNote: startNote,
         }
       );
 
@@ -166,6 +175,47 @@ export default function Home() {
           );
         }}
         className="mt-6 w-full rounded border p-2"
+      />
+
+      <input
+        type="text"
+        placeholder="場所"
+        value={place}
+        onChange={(e) =>
+          setPlace(
+            e.target.value
+          )
+        }
+        className="mt-4 w-full rounded border p-2"
+      />
+
+      <select
+        value={mode}
+        onChange={(e) =>
+          setMode(
+            e.target.value
+          )
+        }
+        className="mt-4 w-full rounded border p-2"
+      >
+        <option value="なんにんでも">
+          なんにんでも
+        </option>
+
+        <option value="ひとりで">
+          ひとりで
+        </option>
+      </select>
+
+      <textarea
+        placeholder="コメント"
+        value={startNote}
+        onChange={(e) =>
+          setStartNote(
+            e.target.value
+          )
+        }
+        className="mt-4 w-full rounded border p-2"
       />
 
       {mySession ? (
