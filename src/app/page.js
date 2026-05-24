@@ -159,6 +159,20 @@ export default function Home() {
     return `${hours}時間${remainMinutes}分`;
   };
 
+  const formatStartTime = (
+    createdAt
+  ) => {
+    return new Date(
+      createdAt
+    ).toLocaleTimeString(
+      "ja-JP",
+      {
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    );
+  };
+
   useEffect(() => {
     const savedName =
       localStorage.getItem(
@@ -333,6 +347,14 @@ export default function Home() {
                   {formatDuration(
                     session.$createdAt
                   )}
+                </p>
+
+                <p className="mt-1">
+                  🟢{" "}
+                  {formatStartTime(
+                    session.$createdAt
+                  )}{" "}
+                  開始
                 </p>
               </div>
             )
