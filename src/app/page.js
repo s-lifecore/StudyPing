@@ -36,6 +36,9 @@ export default function Home() {
   const [mySession, setMySession] =
     useState(null);
 
+  const [now, setNow] =
+    useState(Date.now());
+
   const fetchSessions = async () => {
     try {
       const response =
@@ -125,6 +128,37 @@ export default function Home() {
     }
   };
 
+  const formatDuration = (
+    createdAt
+  ) => {
+    const start =
+      new Date(createdAt);
+
+    const diff =
+      now - start;
+
+    const minutes = Math.max(
+      0,
+      Math.floor(
+        diff / 1000 / 60
+      )
+    );
+
+    const hours =
+      Math.floor(
+        minutes / 60
+      );
+
+    const remainMinutes =
+      minutes % 60;
+
+    if (hours <= 0) {
+      return `${remainMinutes}分`;
+    }
+
+    return `${hours}時間${remainMinutes}分`;
+  };
+
   useEffect(() => {
     const savedName =
       localStorage.getItem(
@@ -153,6 +187,17 @@ export default function Home() {
       unsubscribe();
     };
   }, [name]);
+
+  useEffect(() => {
+    const interval =
+      setInterval(() => {
+        setNow(Date.now());
+      }, 60000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <main className="min-h-screen p-8">
@@ -281,6 +326,13 @@ export default function Home() {
                   {
                     session.startNote
                   }
+                </p>
+
+                <p className="mt-1">
+                  🕒{" "}
+                  {formatDuration(
+                    session.$createdAt
+                  )}
                 </p>
               </div>
             )
