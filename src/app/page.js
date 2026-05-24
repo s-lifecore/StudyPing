@@ -14,6 +14,8 @@ import {
 } from "appwrite";
 
 export default function Home() {
+  const [name, setName] = useState("");
+
   const [sessions, setSessions] = useState([]);
 
   const fetchSessions = async () => {
@@ -33,13 +35,19 @@ export default function Home() {
   };
 
   const handleStart = async () => {
+    if (!name) {
+      alert("名前を入力してください");
+
+      return;
+    }
+
     try {
       await databases.createDocument(
         DATABASE_ID,
         COLLECTION_ID,
         ID.unique(),
         {
-          name: "sudo",
+          name: name,
           status: "active",
           place: "図書館",
           mode: "なんにんでも",
@@ -59,6 +67,13 @@ export default function Home() {
 
   useEffect(() => {
     fetchSessions();
+
+    const savedName =
+      localStorage.getItem("studyping-name");
+
+    if (savedName) {
+      setName(savedName);
+    }
   }, []);
 
   return (
@@ -67,9 +82,24 @@ export default function Home() {
         StudyPing
       </h1>
 
+      <input
+        type="text"
+        placeholder="名前"
+        value={name}
+        onChange={(e) => {
+          setName(e.target.value);
+
+          localStorage.setItem(
+            "studyping-name",
+            e.target.value
+          );
+        }}
+        className="mt-6 w-full rounded border p-2"
+      />
+
       <button
         onClick={handleStart}
-        className="mt-6 rounded bg-black px-4 py-2 text-white"
+        className="mt-4 rounded bg-black px-4 py-2 text-white"
       >
         作業開始
       </button>
@@ -81,7 +111,9 @@ export default function Home() {
 
         <div className="mt-4 space-y-4">
           {sessions.length === 0 && (
-            <p>現在作業中の人はいません。</p>
+            <p>
+              現在作業中の人はいません。
+            </p>
           )}
 
           {sessions.map((session) => (
