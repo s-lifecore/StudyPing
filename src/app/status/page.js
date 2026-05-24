@@ -5,13 +5,13 @@ import {
     useState,
 } from "react";
 
-import Header from "@/components/Header";
+import Header from "../../components/Header";
 
 import {
     databases,
     DATABASE_ID,
     COLLECTION_ID,
-} from "@/lib/appwrite";
+} from "../../lib/appwrite";
 
 import { Query } from "appwrite";
 
