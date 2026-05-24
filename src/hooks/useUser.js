@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { account } from "@/lib/appwrite";
+import { account } from "../lib/appwrite";
 
 export default function useUser() {
     const [user, setUser] = useState(null);
@@ -10,7 +10,13 @@ export default function useUser() {
     const getUser = async () => {
         try {
             const res = await account.get();
-            setUser(res);
+
+            setUser({
+                id: res.$id,
+                name: res.name,
+                email: res.email,
+            });
+
         } catch (e) {
             setUser(null);
         } finally {

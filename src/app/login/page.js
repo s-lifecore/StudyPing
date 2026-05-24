@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { account } from "@/lib/appwrite";
+import { account } from "../../lib/appwrite";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {

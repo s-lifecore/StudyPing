@@ -1,24 +1,19 @@
 import "./globals.css";
-
-import { Toaster } from "react-hot-toast";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 export const metadata = {
   title: "StudyPing",
-  description: "みんなの作業状況を共有",
-  manifest: "/manifest.json",
+  description: "Study & Work Activity Tracker",
 };
 
-export default function RootLayout({
-  children,
-}) {
+export default function RootLayout({ children }) {
   return (
-    <html
-      lang="ja"
-      suppressHydrationWarning
-    >
+    <html lang="ja">
       <body>
-        {children}
-        <Toaster position="top-right" />
+        {/* 🔐 全ページログイン必須 */}
+        <ProtectedRoute>
+          {children}
+        </ProtectedRoute>
       </body>
     </html>
   );

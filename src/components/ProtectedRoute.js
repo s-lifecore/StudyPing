@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import useUser from "@/hooks/useUser";
+import useUser from "../hooks/useUser";
 
 export default function ProtectedRoute({ children }) {
     const router = useRouter();
