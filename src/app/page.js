@@ -207,6 +207,45 @@ export default function Home() {
     );
   };
 
+  const getTotalStudyTime =
+    () => {
+      let totalMinutes = 0;
+
+      finishedSessions.forEach(
+        (session) => {
+          const start =
+            new Date(
+              session.$createdAt
+            );
+
+          const end =
+            new Date(
+              session.$updatedAt
+            );
+
+          const diff =
+            end - start;
+
+          totalMinutes +=
+            Math.floor(
+              diff /
+                1000 /
+                60
+            );
+        }
+      );
+
+      const hours =
+        Math.floor(
+          totalMinutes / 60
+        );
+
+      const minutes =
+        totalMinutes % 60;
+
+      return `${hours}時間${minutes}分`;
+    };
+
   useEffect(() => {
     const savedName =
       localStorage.getItem(
@@ -339,6 +378,37 @@ export default function Home() {
           作業開始
         </button>
       )}
+
+      <div className="mt-10 rounded border p-4">
+        <h2 className="text-2xl font-bold">
+          📊 今日の統計
+        </h2>
+
+        <div className="mt-4 space-y-2">
+          <p>
+            👤 今日開始:
+            {" "}
+            {
+              sessions.length +
+              finishedSessions.length
+            }
+            人
+          </p>
+
+          <p>
+            🟢 作業中:
+            {" "}
+            {sessions.length}
+            人
+          </p>
+
+          <p>
+            🕒 累計作業時間:
+            {" "}
+            {getTotalStudyTime()}
+          </p>
+        </div>
+      </div>
 
       <div className="mt-10">
         <h2 className="text-2xl font-bold">
