@@ -1,11 +1,13 @@
-const withPWA =
-    require("next-pwa")({
-        dest: "public",
-        register: true,
-        skipWaiting: true,
-    });
+const withPWA = require("next-pwa")({
+    dest: "public",
 
-module.exports =
-    withPWA({
-        reactStrictMode: true,
-    });
+    // 🔥 開発中はPWA無効
+    disable: process.env.NODE_ENV === "development",
+
+    register: true,
+    skipWaiting: true,
+});
+
+module.exports = withPWA({
+    reactStrictMode: true,
+});

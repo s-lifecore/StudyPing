@@ -7,8 +7,9 @@ import {
 
 import Header from "../components/Header";
 
+import toast from "react-hot-toast";
+
 import {
-  client,
   databases,
   DATABASE_ID,
   COLLECTION_ID,
@@ -75,10 +76,7 @@ export default function Home() {
 
   const handleStart = async () => {
     if (!name) {
-      alert(
-        "名前を入力してください"
-      );
-
+      alert("名前を入力してください");
       return;
     }
 
@@ -88,11 +86,11 @@ export default function Home() {
         COLLECTION_ID,
         ID.unique(),
         {
-          name: name,
+          name,
           status: "active",
-          place: place,
-          mode: mode,
-          startNote: startNote,
+          place,
+          mode,
+          startNote,
           endNote: "",
         }
       );
@@ -101,19 +99,16 @@ export default function Home() {
 
       await fetchSessions();
 
-      alert("開始した！");
+      toast.success(`${name} が開始した！`);
 
     } catch (error) {
       console.error(error);
-
       alert("エラー");
     }
   };
 
   const handleEnd = async () => {
-    if (!mySession) {
-      return;
-    }
+    if (!mySession) return;
 
     try {
       await databases.updateDocument(
@@ -122,7 +117,7 @@ export default function Home() {
         mySession.$id,
         {
           status: "finished",
-          endNote: endNote,
+          endNote,
         }
       );
 
@@ -130,98 +125,64 @@ export default function Home() {
 
       await fetchSessions();
 
-      alert("終了した！");
+      toast.success(`${name} が終了した！`);
 
     } catch (error) {
       console.error(error);
-
       alert("エラー");
     }
   };
 
-  const formatDuration = (
-    createdAt
-  ) => {
-    const start =
-      new Date(createdAt);
+  const formatDuration = (createdAt) => {
+    const start = new Date(createdAt);
 
-    const diff =
-      now - start;
+    const diff = now - start;
 
     const minutes = Math.max(
       0,
-      Math.floor(
-        diff / 1000 / 60
-      )
+      Math.floor(diff / 1000 / 60)
     );
 
-    const hours =
-      Math.floor(
-        minutes / 60
-      );
+    const hours = Math.floor(minutes / 60);
+    const remainMinutes = minutes % 60;
 
-    const remainMinutes =
-      minutes % 60;
-
-    if (hours <= 0) {
-      return `${remainMinutes}分`;
-    }
+    if (hours <= 0) return `${remainMinutes}分`;
 
     return `${hours}時間${remainMinutes}分`;
   };
 
-  const formatStartTime = (
-    createdAt
-  ) => {
-    return new Date(
-      createdAt
-    ).toLocaleTimeString(
-      "ja-JP",
-      {
-        hour: "2-digit",
-        minute: "2-digit",
-      }
-    );
+  const formatStartTime = (createdAt) => {
+    return new Date(createdAt).toLocaleTimeString("ja-JP", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   useEffect(() => {
-    const savedName =
-      localStorage.getItem(
-        "studyping-name"
-      );
-
-    if (savedName) {
-      setName(savedName);
-    }
+    const saved =
+      localStorage.getItem("studyping-name");
+    if (saved) setName(saved);
   }, []);
 
   useEffect(() => {
     fetchSessions();
   }, [name]);
 
+  // 🔥 subscribe削除 → 安定ポーリング方式
   useEffect(() => {
-    const unsubscribe =
-      client.subscribe(
-        `databases.${DATABASE_ID}.collections.${COLLECTION_ID}.documents`,
-        () => {
-          fetchSessions();
-        }
-      );
+    const interval = setInterval(() => {
+      fetchSessions();
+    }, 5000);
 
-    return () => {
-      unsubscribe();
-    };
+    return () => clearInterval(interval);
   }, [name]);
 
   useEffect(() => {
-    const interval =
-      setInterval(() => {
-        setNow(Date.now());
-      }, 60000);
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 60000);
 
-    return () => {
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -233,80 +194,51 @@ export default function Home() {
       </h1>
 
       <input
-        type="text"
+        className="mt-6 w-full rounded border p-2"
         placeholder="名前"
         value={name}
         onChange={(e) => {
-          setName(
-            e.target.value
-          );
-
-          localStorage.setItem(
-            "studyping-name",
-            e.target.value
-          );
+          setName(e.target.value);
+          localStorage.setItem("studyping-name", e.target.value);
         }}
-        className="mt-6 w-full rounded border p-2"
       />
 
       <input
-        type="text"
+        className="mt-4 w-full rounded border p-2"
         placeholder="場所"
         value={place}
-        onChange={(e) =>
-          setPlace(
-            e.target.value
-          )
-        }
-        className="mt-4 w-full rounded border p-2"
+        onChange={(e) => setPlace(e.target.value)}
       />
 
       <select
-        value={mode}
-        onChange={(e) =>
-          setMode(
-            e.target.value
-          )
-        }
         className="mt-4 w-full rounded border p-2"
+        value={mode}
+        onChange={(e) => setMode(e.target.value)}
       >
-        <option value="なんにんでも">
-          なんにんでも
-        </option>
-
-        <option value="ひとりで">
-          ひとりで
-        </option>
+        <option value="なんにんでも">なんにんでも</option>
+        <option value="ひとりで">ひとりで</option>
       </select>
 
       <textarea
+        className="mt-4 w-full rounded border p-2"
         placeholder="開始コメント"
         value={startNote}
-        onChange={(e) =>
-          setStartNote(
-            e.target.value
-          )
-        }
-        className="mt-4 w-full rounded border p-2"
+        onChange={(e) => setStartNote(e.target.value)}
       />
 
       {mySession && (
         <textarea
+          className="mt-4 w-full rounded border p-2"
           placeholder="終了コメント"
           value={endNote}
-          onChange={(e) =>
-            setEndNote(
-              e.target.value
-            )
-          }
-          className="mt-4 w-full rounded border p-2"
+          onChange={(e) => setEndNote(e.target.value)}
         />
       )}
 
       {mySession ? (
         <button
           onClick={handleEnd}
-          className="mt-4 rounded bg-red-500 px-4 py-2 text-white"
+          className="mt-4 rounded bg-red-500 px-4 py-2 text-white dark:bg-red-600"
         >
           作業終了
         </button>
@@ -325,66 +257,29 @@ export default function Home() {
         </h2>
 
         <div className="mt-4 space-y-4">
-          {sessions.length ===
-            0 && (
-              <p>
-                現在作業中の人は
-                いません。
-              </p>
-            )}
-
-          {sessions.map(
-            (session) => (
-              <div
-                key={
-                  session.$id
-                }
-                className="rounded border p-4"
-              >
-                <p className="text-lg font-bold">
-                  {
-                    session.name
-                  }
-                </p>
-
-                <p className="mt-1">
-                  📍{" "}
-                  {
-                    session.place
-                  }
-                </p>
-
-                <p className="mt-1">
-                  👥{" "}
-                  {
-                    session.mode
-                  }
-                </p>
-
-                <p className="mt-1">
-                  💬{" "}
-                  {
-                    session.startNote
-                  }
-                </p>
-
-                <p className="mt-1">
-                  🕒{" "}
-                  {formatDuration(
-                    session.$createdAt
-                  )}
-                </p>
-
-                <p className="mt-1">
-                  🟢{" "}
-                  {formatStartTime(
-                    session.$createdAt
-                  )}{" "}
-                  開始
-                </p>
-              </div>
-            )
+          {sessions.length === 0 && (
+            <p>現在作業中の人はいません。</p>
           )}
+
+          {sessions.map((session) => (
+            <div key={session.$id} className="rounded border p-4">
+              <p className="text-lg font-bold">{session.name}</p>
+
+              <p className="mt-1">📍 {session.place}</p>
+
+              <p className="mt-1">👥 {session.mode}</p>
+
+              <p className="mt-1">💬 {session.startNote}</p>
+
+              <p className="mt-1">
+                🕒 {formatDuration(session.$createdAt)}
+              </p>
+
+              <p className="mt-1">
+                🟢 {formatStartTime(session.$createdAt)} 開始
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </main>
