@@ -1,8 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import {
+  client,
   databases,
   DATABASE_ID,
   COLLECTION_ID,
@@ -14,9 +18,11 @@ import {
 } from "appwrite";
 
 export default function Home() {
-  const [name, setName] = useState("");
+  const [name, setName] =
+    useState("");
 
-  const [sessions, setSessions] = useState([]);
+  const [sessions, setSessions] =
+    useState([]);
 
   const [mySession, setMySession] =
     useState(null);
@@ -37,10 +43,11 @@ export default function Home() {
 
       setSessions(response.documents);
 
-      const mine = response.documents.find(
-        (session) =>
-          session.name === name
-      );
+      const mine =
+        response.documents.find(
+          (session) =>
+            session.name === name
+        );
 
       setMySession(mine || null);
 
@@ -51,7 +58,9 @@ export default function Home() {
 
   const handleStart = async () => {
     if (!name) {
-      alert("名前を入力してください");
+      alert(
+        "名前を入力してください"
+      );
 
       return;
     }
@@ -122,6 +131,20 @@ export default function Home() {
     fetchSessions();
   }, [name]);
 
+  useEffect(() => {
+    const unsubscribe =
+      client.subscribe(
+        `databases.${DATABASE_ID}.collections.${COLLECTION_ID}.documents`,
+        () => {
+          fetchSessions();
+        }
+      );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [name]);
+
   return (
     <main className="min-h-screen p-8">
       <h1 className="text-4xl font-bold">
@@ -133,7 +156,9 @@ export default function Home() {
         placeholder="名前"
         value={name}
         onChange={(e) => {
-          setName(e.target.value);
+          setName(
+            e.target.value
+          );
 
           localStorage.setItem(
             "studyping-name",
@@ -165,34 +190,51 @@ export default function Home() {
         </h2>
 
         <div className="mt-4 space-y-4">
-          {sessions.length === 0 && (
+          {sessions.length ===
+            0 && (
             <p>
-              現在作業中の人はいません。
+              現在作業中の人は
+              いません。
             </p>
           )}
 
-          {sessions.map((session) => (
-            <div
-              key={session.$id}
-              className="rounded border p-4"
-            >
-              <p className="text-lg font-bold">
-                {session.name}
-              </p>
+          {sessions.map(
+            (session) => (
+              <div
+                key={
+                  session.$id
+                }
+                className="rounded border p-4"
+              >
+                <p className="text-lg font-bold">
+                  {
+                    session.name
+                  }
+                </p>
 
-              <p className="mt-1">
-                📍 {session.place}
-              </p>
+                <p className="mt-1">
+                  📍{" "}
+                  {
+                    session.place
+                  }
+                </p>
 
-              <p className="mt-1">
-                👥 {session.mode}
-              </p>
+                <p className="mt-1">
+                  👥{" "}
+                  {
+                    session.mode
+                  }
+                </p>
 
-              <p className="mt-1">
-                💬 {session.startNote}
-              </p>
-            </div>
-          ))}
+                <p className="mt-1">
+                  💬{" "}
+                  {
+                    session.startNote
+                  }
+                </p>
+              </div>
+            )
+          )}
         </div>
       </div>
     </main>
