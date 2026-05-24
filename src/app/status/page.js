@@ -5,6 +5,8 @@ import {
     useState,
 } from "react";
 
+import Header from "@/components/Header";
+
 import {
     databases,
     DATABASE_ID,
@@ -125,6 +127,8 @@ export default function StatsPage() {
 
     return (
         <main className="min-h-screen p-8">
+            <Header />
+
             <h1 className="text-4xl font-bold">
                 📊 StudyPing Stats
             </h1>

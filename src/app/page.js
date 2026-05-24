@@ -5,6 +5,8 @@ import {
   useState,
 } from "react";
 
+import Header from "@/components/Header";
+
 import {
   client,
   databases,
@@ -36,11 +38,6 @@ export default function Home() {
   const [sessions, setSessions] =
     useState([]);
 
-  const [
-    finishedSessions,
-    setFinishedSessions,
-  ] = useState([]);
-
   const [mySession, setMySession] =
     useState(null);
 
@@ -62,26 +59,6 @@ export default function Home() {
         );
 
       setSessions(response.documents);
-
-      const finishedResponse =
-        await databases.listDocuments(
-          DATABASE_ID,
-          COLLECTION_ID,
-          [
-            Query.equal(
-              "status",
-              "finished"
-            ),
-            Query.orderDesc(
-              "$updatedAt"
-            ),
-            Query.limit(10),
-          ]
-        );
-
-      setFinishedSessions(
-        finishedResponse.documents
-      );
 
       const mine =
         response.documents.find(
@@ -207,45 +184,6 @@ export default function Home() {
     );
   };
 
-  const getTotalStudyTime =
-    () => {
-      let totalMinutes = 0;
-
-      finishedSessions.forEach(
-        (session) => {
-          const start =
-            new Date(
-              session.$createdAt
-            );
-
-          const end =
-            new Date(
-              session.$updatedAt
-            );
-
-          const diff =
-            end - start;
-
-          totalMinutes +=
-            Math.floor(
-              diff /
-                1000 /
-                60
-            );
-        }
-      );
-
-      const hours =
-        Math.floor(
-          totalMinutes / 60
-        );
-
-      const minutes =
-        totalMinutes % 60;
-
-      return `${hours}時間${minutes}分`;
-    };
-
   useEffect(() => {
     const savedName =
       localStorage.getItem(
@@ -288,6 +226,8 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-8">
+      <Header />
+
       <h1 className="text-4xl font-bold">
         StudyPing
       </h1>
@@ -379,37 +319,6 @@ export default function Home() {
         </button>
       )}
 
-      <div className="mt-10 rounded border p-4">
-        <h2 className="text-2xl font-bold">
-          📊 今日の統計
-        </h2>
-
-        <div className="mt-4 space-y-2">
-          <p>
-            👤 今日開始:
-            {" "}
-            {
-              sessions.length +
-              finishedSessions.length
-            }
-            人
-          </p>
-
-          <p>
-            🟢 作業中:
-            {" "}
-            {sessions.length}
-            人
-          </p>
-
-          <p>
-            🕒 累計作業時間:
-            {" "}
-            {getTotalStudyTime()}
-          </p>
-        </div>
-      </div>
-
       <div className="mt-10">
         <h2 className="text-2xl font-bold">
           🟢 作業中
@@ -472,49 +381,6 @@ export default function Home() {
                     session.$createdAt
                   )}{" "}
                   開始
-                </p>
-              </div>
-            )
-          )}
-        </div>
-      </div>
-
-      <div className="mt-10">
-        <h2 className="text-2xl font-bold">
-          ✅ 最近終了した人
-        </h2>
-
-        <div className="mt-4 space-y-4">
-          {finishedSessions.length ===
-            0 && (
-            <p>
-              まだ終了履歴は
-              ありません。
-            </p>
-          )}
-
-          {finishedSessions.map(
-            (session) => (
-              <div
-                key={session.$id}
-                className="rounded border p-4 opacity-80"
-              >
-                <p className="text-lg font-bold">
-                  {session.name}
-                </p>
-
-                <p className="mt-1">
-                  💬{" "}
-                  {
-                    session.endNote
-                  }
-                </p>
-
-                <p className="mt-1">
-                  🕒{" "}
-                  {formatDuration(
-                    session.$createdAt
-                  )}
                 </p>
               </div>
             )
