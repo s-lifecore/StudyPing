@@ -30,6 +30,9 @@ export default function Home() {
   const [startNote, setStartNote] =
     useState("");
 
+  const [endNote, setEndNote] =
+    useState("");
+
   const [sessions, setSessions] =
     useState([]);
 
@@ -88,8 +91,11 @@ export default function Home() {
           place: place,
           mode: mode,
           startNote: startNote,
+          endNote: "",
         }
       );
+
+      setEndNote("");
 
       await fetchSessions();
 
@@ -114,8 +120,11 @@ export default function Home() {
         mySession.$id,
         {
           status: "finished",
+          endNote: endNote,
         }
       );
+
+      setEndNote("");
 
       await fetchSessions();
 
@@ -267,7 +276,7 @@ export default function Home() {
       </select>
 
       <textarea
-        placeholder="コメント"
+        placeholder="開始コメント"
         value={startNote}
         onChange={(e) =>
           setStartNote(
@@ -276,6 +285,19 @@ export default function Home() {
         }
         className="mt-4 w-full rounded border p-2"
       />
+
+      {mySession && (
+        <textarea
+          placeholder="終了コメント"
+          value={endNote}
+          onChange={(e) =>
+            setEndNote(
+              e.target.value
+            )
+          }
+          className="mt-4 w-full rounded border p-2"
+        />
+      )}
 
       {mySession ? (
         <button
