@@ -36,6 +36,11 @@ export default function Home() {
   const [sessions, setSessions] =
     useState([]);
 
+  const [
+    finishedSessions,
+    setFinishedSessions,
+  ] = useState([]);
+
   const [mySession, setMySession] =
     useState(null);
 
@@ -57,6 +62,26 @@ export default function Home() {
         );
 
       setSessions(response.documents);
+
+      const finishedResponse =
+        await databases.listDocuments(
+          DATABASE_ID,
+          COLLECTION_ID,
+          [
+            Query.equal(
+              "status",
+              "finished"
+            ),
+            Query.orderDesc(
+              "$updatedAt"
+            ),
+            Query.limit(10),
+          ]
+        );
+
+      setFinishedSessions(
+        finishedResponse.documents
+      );
 
       const mine =
         response.documents.find(
@@ -377,6 +402,49 @@ export default function Home() {
                     session.$createdAt
                   )}{" "}
                   開始
+                </p>
+              </div>
+            )
+          )}
+        </div>
+      </div>
+
+      <div className="mt-10">
+        <h2 className="text-2xl font-bold">
+          ✅ 最近終了した人
+        </h2>
+
+        <div className="mt-4 space-y-4">
+          {finishedSessions.length ===
+            0 && (
+            <p>
+              まだ終了履歴は
+              ありません。
+            </p>
+          )}
+
+          {finishedSessions.map(
+            (session) => (
+              <div
+                key={session.$id}
+                className="rounded border p-4 opacity-80"
+              >
+                <p className="text-lg font-bold">
+                  {session.name}
+                </p>
+
+                <p className="mt-1">
+                  💬{" "}
+                  {
+                    session.endNote
+                  }
+                </p>
+
+                <p className="mt-1">
+                  🕒{" "}
+                  {formatDuration(
+                    session.$createdAt
+                  )}
                 </p>
               </div>
             )
