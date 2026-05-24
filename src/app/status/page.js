@@ -126,7 +126,7 @@ export default function StatsPage() {
     }, []);
 
     return (
-        <main className="min-h-screen p-8">
+        <main className="min-h-screen bg-white p-8 text-black dark:bg-black dark:text-white">
             <Header />
 
             <h1 className="text-4xl font-bold">

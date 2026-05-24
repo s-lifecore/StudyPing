@@ -225,7 +225,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen p-8">
+    <main className="min-h-screen bg-white p-8 text-black dark:bg-black dark:text-white">
       <Header />
 
       <h1 className="text-4xl font-bold">
@@ -313,7 +313,7 @@ export default function Home() {
       ) : (
         <button
           onClick={handleStart}
-          className="mt-4 rounded bg-black px-4 py-2 text-white"
+          className="mt-4 rounded bg-black px-4 py-2 text-white dark:bg-white dark:text-black"
         >
           作業開始
         </button>
@@ -327,11 +327,11 @@ export default function Home() {
         <div className="mt-4 space-y-4">
           {sessions.length ===
             0 && (
-            <p>
-              現在作業中の人は
-              いません。
-            </p>
-          )}
+              <p>
+                現在作業中の人は
+                いません。
+              </p>
+            )}
 
           {sessions.map(
             (session) => (
