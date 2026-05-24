@@ -6,11 +6,11 @@ import { useParams } from "next/navigation";
 import {
     databases,
     DATABASE_ID,
-} from "@/lib/appwrite";
+} from "../../../lib/appwrite";
 
 import { ID, Query } from "appwrite";
 
-import useUser from "@/hooks/useUser";
+import useUser from "../../../hooks/useUser";
 
 export default function RoomPage() {
     const { roomId } = useParams();

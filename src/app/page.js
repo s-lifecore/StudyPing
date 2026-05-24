@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import usePushNotification from "@/hooks/usePushNotification";
+import usePushNotification from "../hooks/usePushNotification";
 import Header from "../components/Header";
 
 import {
