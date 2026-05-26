@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 export const metadata = {
@@ -10,10 +11,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ja">
       <body>
-        {/* 🔐 全ページログイン必須 */}
         <ProtectedRoute>
           {children}
         </ProtectedRoute>
+        <Toaster position="top-center" />
       </body>
     </html>
   );

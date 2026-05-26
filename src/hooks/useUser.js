@@ -16,11 +16,20 @@ export default function useUser() {
                 name: res.name,
                 email: res.email,
             });
-
-        } catch (e) {
+        } catch {
             setUser(null);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const logout = async () => {
+        try {
+            await account.deleteSession("current");
+        } catch {
+            // セッションが既に無効でも問題なし
+        } finally {
+            setUser(null);
         }
     };
 
@@ -28,5 +37,5 @@ export default function useUser() {
         getUser();
     }, []);
 
-    return { user, loading };
+    return { user, loading, logout };
 }

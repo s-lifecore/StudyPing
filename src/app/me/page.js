@@ -74,57 +74,91 @@ export default function MyPage() {
     };
 
     return (
-        <main className="min-h-screen p-8 bg-white text-black dark:bg-black dark:text-white">
-            <Header />
+        <main className="min-h-screen bg-gray-50 px-4 py-8 text-gray-900 dark:bg-gray-950 dark:text-white">
+            <div className="mx-auto max-w-2xl">
+                <Header />
 
-            <h1 className="text-3xl font-bold">
-                マイページ
-            </h1>
+                {/* プロフィール */}
+                <div className="mb-6 flex items-center gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 text-2xl font-bold text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                        {user ? (user.name || user.email || "?")[0].toUpperCase() : "?"}
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold">
+                            {user?.name || "マイページ"}
+                        </h1>
+                        {user?.email && (
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                {user.email}
+                            </p>
+                        )}
+                    </div>
+                </div>
 
-            {user && (
-                <p className="mt-2 text-gray-500">
-                    {user.name} ({user.email})
-                </p>
-            )}
+                {/* 合計作業時間 */}
+                <div className="mb-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                    <p className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                        合計作業時間
+                    </p>
+                    <p className="mt-1 text-3xl font-bold text-blue-600 dark:text-blue-400">
+                        ⏱ {totalTime()}
+                    </p>
+                    <p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
+                        {sessions.length} セッション
+                    </p>
+                </div>
 
-            <div className="mt-6">
-                <p className="font-bold">
-                    ⏱ 合計作業時間
-                </p>
-                <p className="text-xl">{totalTime()}</p>
-            </div>
-
-            <div className="mt-10">
-                <h2 className="text-xl font-bold">
-                    📜 作業履歴
-                </h2>
+                {/* 作業履歴 */}
+                <h2 className="mb-3 text-lg font-bold">📜 作業履歴</h2>
 
                 {loading ? (
-                    <p>読み込み中...</p>
+                    <p className="text-sm text-gray-400">読み込み中...</p>
                 ) : sessions.length === 0 ? (
-                    <p>まだ履歴がありません</p>
+                    <div className="rounded-xl border border-dashed border-gray-300 p-8 text-center dark:border-gray-700">
+                        <p className="text-gray-400 dark:text-gray-500">
+                            まだ履歴がありません
+                        </p>
+                    </div>
                 ) : (
-                    <div className="mt-4 space-y-4">
+                    <div className="space-y-3">
                         {sessions.map((s) => (
                             <div
                                 key={s.$id}
-                                className="border p-4 rounded"
+                                className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900"
                             >
-                                <p className="font-bold">
-                                    {s.roomId}
-                                </p>
+                                <div className="flex items-start justify-between">
+                                    <p className="font-semibold text-gray-900 dark:text-white">
+                                        📖 {s.roomId}
+                                    </p>
+                                    <span
+                                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                                            s.status === "finished"
+                                                ? "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                                                : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300"
+                                        }`}
+                                    >
+                                        {s.status === "finished" ? "終了" : "作業中"}
+                                    </span>
+                                </div>
 
-                                <p>📍 {s.place}</p>
-
-                                <p>💬 {s.startNote}</p>
-
-                                <p>🕒 開始: {formatTime(s.$createdAt)}</p>
-
-                                {s.status === "finished" && (
-                                    <p>
-                                        🏁 終了: {formatTime(s.$updatedAt)}
+                                {s.place && (
+                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        📍 {s.place}
                                     </p>
                                 )}
+
+                                {s.startNote && (
+                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        💬 {s.startNote}
+                                    </p>
+                                )}
+
+                                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400 dark:text-gray-500">
+                                    <span>🕒 開始: {formatTime(s.$createdAt)}</span>
+                                    {s.status === "finished" && (
+                                        <span>🏁 終了: {formatTime(s.$updatedAt)}</span>
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>
