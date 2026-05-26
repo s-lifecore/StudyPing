@@ -31,7 +31,7 @@ export default function Header() {
                     href="/status"
                     className="flex items-center gap-1.5 text-base font-bold text-gray-800 hover:text-blue-600 dark:text-gray-100 dark:hover:text-blue-400"
                 >
-                    📊 <span>Stats</span>
+                    📊 <span>Status</span>
                 </Link>
 
                 {user && (
